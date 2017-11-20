@@ -42,6 +42,7 @@ data Attr
   | FontColor String
   | FontSize Int
   | Width Int
+  | Label String
   | Shape ShapeType
   | Style FillStyle
 
@@ -57,8 +58,15 @@ instance attrDotLang :: DotLang Attr where
   toText (Width i) = "width="<> show i
   toText (Shape t) = "shape="<> (toText t)
   toText (Style f) = "fillstyle="<>(toText f)
+  toText (Label t) = "label="<> show t
 
 data Node = Node Id (Array Attr)
+
+nodeId :: Node -> Id
+nodeId (Node id _) = id
+
+mapNodeId :: (Id -> Id) -> Node -> Node
+mapNodeId f (Node id attr) = Node (f id) $ attr <> [Label id]
 
 derive instance genericNode :: Generic Node _
 
@@ -66,7 +74,8 @@ instance showNode :: Show Node where
   show = genericShow
 
 instance nodeDotLang :: DotLang Node where
-  toText (Node id attrs) = id <> " " <> (joinWith "" (toText <$> attrs))
+  toText (Node id attrs) = id <> " [" <> (joinWith " ," (toText <$> attrs)) <> "]"
+
 
 data Edge = Edge Id Id
 
@@ -103,12 +112,8 @@ ex1 = DiGraph
     ]
   ]
 
-data Test = A | B | R Test Test
-
-derive instance genericTest :: Generic Test _
-
-instance showTest :: Show Test where
-show x = genericShow x
+graphFromEdges :: Array (Node) -> Array (Edge) -> Graph
+graphFromEdges nodes edges = DiGraph $ (NodeDef <$> nodes) <> (EdgeDef <$> edges)
 
 class DotR a where
   toDot :: a -> Graph

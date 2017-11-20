@@ -1,12 +1,14 @@
 module Data.DotLang where
 
-import Prelude (class Show, show, ($), (<$>), (<>))
+import Data.Generic.Rep (class Generic)
+import Data.Generic.Rep.Show (genericShow)
 import Data.String (joinWith)
-import Data.Generic.Rep
-import Data.Generic.Rep.Show
+import Prelude (class Show, show, ($), (<$>), (<>))
 
+-- | type alias for a Nodes Name
 type Id = String
 
+-- | possible node shapes
 data ShapeType
   = Box | Polygon | Ellipse | Oval | Circle | Point | Egg
   | Triangle | Plaintext | Plain | Diamond -- ...
@@ -19,12 +21,18 @@ instance showShape :: Show ShapeType where
   show Circle = "circle"
   show Point = "point"
   show Egg = "egg"
-  show _ = "fuck"
+  show Triangle = "triangle"
+  show Plaintext = "plaintext"
+  show Plain = "plain"
+  show Diamond = "diamond"
 
 instance shapeDotLang :: DotLang ShapeType where
   toText a = show a
 
-data FillStyle = Filled
+data FillStyle
+  = Filled
+  | Dotted
+  | Invis
 
 derive instance genericFillStyle :: Generic FillStyle _
 
@@ -33,6 +41,8 @@ instance showFillStyle :: Show FillStyle where
 
 instance fillStyleDotLang :: DotLang FillStyle where
   toText Filled = "filled"
+  toText Dotted = "dotted"
+  toText Invis = "invis"
 
 data Attr
   = Margin Int
@@ -50,7 +60,7 @@ instance showAttr :: Show Attr where
 
 instance attrDotLang :: DotLang Attr where
   toText (Margin i) = "margin="<> show i
-  toText (FontColor s) = "fontcolor="<> s
+  toText (FontColor s) = "fontcolor="<>s
   toText (FontSize i) = "fontsize="<> show i
   toText (Width i) = "width="<> show i
   toText (Shape t) = "shape="<> (toText t)
@@ -88,7 +98,7 @@ data Definition
 
 instance definitionDotlang :: DotLang Definition where
   toText (NodeDef node) = toText node <> "; "
-  toText (EdgeDef (Edge a b)) = a <> " -> " <> b <> "; "
+  toText (EdgeDef (Edge a b)) = a <> " -> " <> b <> ";\n "
   toText (Subgraph defs) = "subgraph {\n " <> (joinWith "" $ toText <$> defs) <> "}"
 
 data Graph

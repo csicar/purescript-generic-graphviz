@@ -2,7 +2,8 @@ module Data.GenericGraph where
 
 import Control.Semigroupoid ((>>>))
 import Data.Array (concat, foldr, (!!), (:))
-import Data.DotLang (Edge(..), Graph, Node(..), graphFromEdges, mapNodeId, nodeId)
+import Data.DotLang (Attr(..), Edge(..), FillStyle(..), Graph, Node(..), graphFromEdges, mapNodeId, nodeId)
+import Data.Functor ((<$>))
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), Field(..), NoArguments, NoConstructors, Product(..), Rec(..), Sum(..), from)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (joinWith)
@@ -50,6 +51,18 @@ instance stringEdge :: Edges String where
 
 instance intEdge :: Edges Int where
   edges i = Root (Just $ Node (show i) []) []
+
+instance numberEdge :: Edges Number where
+  edges n = Root (Just $ Node (show n) []) []
+
+instance charEdge :: Edges Char where
+  edges c = Root (Just $ Node (show c) []) []
+
+instance boolEdge :: Edges Boolean where
+  edges b = Root (Just $ Node (show b) []) []
+
+instance arrayEdges :: Edges a => Edges (Array a) where
+  edges a = Root (Just $ Node ("array") []) (edges <$> a)
 
 instance genericReprArgument :: Edges a => GenericEdges (Argument a) where
   genericEdges' (Argument a) = edges a
@@ -100,7 +113,7 @@ genericToDot e
   = id
   $ (\f -> graphFromEdges (extractNodes f) (extractEdges (Node "root" []) f))
   $ uniqueNodes
-  $ fromMaybe (Root (Node "" []) [])
+  $ fromMaybe (Root (Node "" [Style Invis]) [])
   $ (\a -> a !! 0)
   $ eliminateNothings
   $ edges e

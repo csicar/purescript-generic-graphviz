@@ -1,24 +1,27 @@
-module GenericGraph where
+module Data.GenericGraph where
 
+import Control.Semigroupoid ((>>>))
 import Data.Array (concat, foldr, (!!), (:))
+import Data.DotLang (Edge(..), Graph, Node(..), graphFromEdges, mapNodeId, nodeId)
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), Field(..), NoArguments, NoConstructors, Product(..), Rec(..), Sum(..), from)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (joinWith)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
-import Data.Tuple (Tuple(..))
-import Debug.Trace (spy)
-import Dot (Edge(..), Graph, Node(..), graphFromEdges, mapNodeId, nodeId)
+import Data.Tuple (Tuple(..), fst)
 import Prelude (class Show, id, show, ($), (+), (<$>), (<>))
 
+
+-- Tree type
 data Tree a = Root a (Array (Tree a))
 
 derive instance genericTree :: Generic (Tree a) _
 
--- instance showTree :: Show a => Show (Tree a) where
---   show = genericShow
-
 instance showTree :: Show a => Show (Tree a) where
-    show (Root a l) = (show a) <> "( " <> (joinWith "\n" $ show <$> l) <> ")"
+  show (Root a l) = (show a) <> "( " <> (joinWith "\n" $ show <$> l) <> ")"
+
+class Edges a where
+  edges :: a -> Tree (Maybe Node)
+
 
 class GenericEdges a where
   genericEdges' :: a -> Tree (Maybe Node)
@@ -42,10 +45,6 @@ instance genericEdgesConstructor :: (GenericEdges a, IsSymbol name) => GenericEd
       constructorName = reflectSymbol (SProxy :: SProxy name)
 
 
-
-class Edges a where
-  edges :: a -> Tree (Maybe Node)
-
 instance stringEdge :: Edges String where
   edges a = Root (Just $ Node (show a) []) []
 
@@ -59,8 +58,10 @@ instance genericReprArgument :: Edges a => GenericEdges (Argument a) where
 instance genericEdgesRec :: GenericEdges a => GenericEdges (Rec a) where
   genericEdges' (Rec a) = genericEdges' a
 
-instance genericEdgesField :: Show a => GenericEdges (Field name a) where
-  genericEdges' (Field a) = Root (Just $ Node ( show a) []) []
+instance genericEdgesField :: (Edges a, IsSymbol name) => GenericEdges (Field name a) where
+  genericEdges' (Field a) = Root (Just $ Node fieldName []) [ edges a ]
+    where
+      fieldName = reflectSymbol (SProxy :: SProxy name)
 
 -- | A `Generic` implementation of the `eq` member from the `Eq` type class.
 genericEdges :: forall a rep. Generic a rep => GenericEdges rep => a -> Tree (Maybe Node)
@@ -72,17 +73,19 @@ eliminateNothings (Root (Just a) list) = [Root a $ concat $ eliminateNothings <$
 
 uniqueNode :: Tree Node -> Tuple Int (Array (Tree Node)) -> Tuple Int (Array (Tree Node))
 uniqueNode child (Tuple accId accChildren) = let
-    Tuple newChild newId = uniqueNodes accId child
+    Tuple newChild newId = uniqueNodes' accId child
   in
     Tuple newId (newChild : accChildren)
 
-uniqueNodes :: Int -> Tree Node -> Tuple (Tree Node) Int
-uniqueNodes id' (Root node children) = let
+uniqueNodes' :: Int -> Tree Node -> Tuple (Tree Node) Int
+uniqueNodes' id' (Root node children) = let
     newNode = mapNodeId (\name -> show id') node
     id = id' + 1
     Tuple finalId newChildren = foldr uniqueNode (Tuple id []) children
   in  Tuple (Root newNode newChildren) finalId
 
+uniqueNodes :: Tree Node -> Tree Node
+uniqueNodes = (uniqueNodes' 0) >>> fst
 
 extractEdges :: Node -> Tree Node -> Array Edge
 extractEdges parent (Root node children) = [Edge (nodeId parent) (nodeId node)] <>
@@ -92,13 +95,12 @@ extractEdges parent (Root node children) = [Edge (nodeId parent) (nodeId node)] 
 extractNodes :: Tree Node -> Array Node
 extractNodes (Root node children) = node : (concat $ extractNodes <$> children)
 
-genericToDot :: ∀a rep. Generic a rep => GenericEdges rep => a -> Graph
-genericToDot b
+genericToDot :: ∀a. Edges a => a -> Graph
+genericToDot e
   = id
-  $ graphFromEdges []
-  $ extractEdges (Node "root" [])
-  $ fromMaybe (Root (Node "fuuu" []) [])
+  $ (\f -> graphFromEdges (extractNodes f) (extractEdges (Node "root" []) f))
+  $ uniqueNodes
+  $ fromMaybe (Root (Node "" []) [])
   $ (\a -> a !! 0)
   $ eliminateNothings
-  $ genericEdges
-  $ b
+  $ edges e

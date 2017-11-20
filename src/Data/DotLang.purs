@@ -1,9 +1,6 @@
-module Dot where
+module Data.DotLang where
 
-import Prelude
-import Data.Maybe (Maybe)
-import Data.Tuple (Tuple)
-import Data.Array (concat)
+import Prelude (class Show, show, ($), (<$>), (<>))
 import Data.String (joinWith)
 import Data.Generic.Rep
 import Data.Generic.Rep.Show
@@ -102,15 +99,6 @@ data Graph
 instance graphDotLang :: DotLang Graph where
   toText (Graph defs) = "graph {\n" <> (joinWith "" $ toText <$> defs) <> "}"
   toText (DiGraph defs) = "digraph {\n" <> (joinWith "" $ toText <$> defs) <> "}"
-
-ex1 = DiGraph
-  [ NodeDef $ Node "a" []
-  , NodeDef $ Node "b" []
-  , EdgeDef $ Edge "a" "b"
-  , Subgraph
-    [ EdgeDef $ Edge "c" "d"
-    ]
-  ]
 
 graphFromEdges :: Array (Node) -> Array (Edge) -> Graph
 graphFromEdges nodes edges = DiGraph $ (NodeDef <$> nodes) <> (EdgeDef <$> edges)

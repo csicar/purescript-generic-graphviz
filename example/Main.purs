@@ -3,11 +3,11 @@ module Main where
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.Array (foldr)
-import Data.DotLang (class DotR, toText)
+import Data.DotLang (class DotR)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.GenericGraph (class Edges, genericEdges, genericToDot)
-import Graphics.Graphviz (Engine(..), renderToSvg)
+import Graphics.Graphviz (Engine(..), renderReprSvg, renderToSvg)
 import Prelude (class Show, Unit, ($))
 
 main :: forall e. Eff (console :: CONSOLE | e) Unit
@@ -60,7 +60,7 @@ instance dotRUser :: DotR User where
   toDot = genericToDot
 
 generateSvg :: ∀a. DotR a => a -> String
-generateSvg e = renderToSvg Dot e
+generateSvg e = renderReprSvg Dot e
 
 ex1 :: String
 ex1 = generateSvg (R (R B A A) B B)
@@ -71,3 +71,6 @@ ex1 = generateSvg (R (R B A A) B B)
 
 ex3 :: String
 ex3 = generateSvg $ User {name: "Test", age: 2, friends: R A A B}
+
+ex4 :: String
+ex4 = renderToSvg Dot $ genericToDot  [A, R A B A]

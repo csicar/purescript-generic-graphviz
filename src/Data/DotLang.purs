@@ -64,7 +64,7 @@ instance attrDotLang :: DotLang Attr where
   toText (FontSize i) = "fontsize="<> show i
   toText (Width i) = "width="<> show i
   toText (Shape t) = "shape="<> (toText t)
-  toText (Style f) = "fillstyle="<>(toText f)
+  toText (Style f) = "style="<>(toText f)
   toText (Label t) = "label="<> show t
 
 data Node = Node Id (Array Attr)

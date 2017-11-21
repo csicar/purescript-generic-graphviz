@@ -111,9 +111,9 @@ extractNodes (Root node children) = node : (concat $ extractNodes <$> children)
 genericToDot :: ∀a. Edges a => a -> Graph
 genericToDot e
   = id
-  $ (\f -> graphFromEdges (extractNodes f) (extractEdges (Node "root" []) f))
+  $ (\f -> graphFromEdges ((Node "root" [Style Invis]) : extractNodes f) (extractEdges (Node "root" []) f))
   $ uniqueNodes
-  $ fromMaybe (Root (Node "" [Style Invis]) [])
+  $ fromMaybe (Root (Node "" []) [])
   $ (\a -> a !! 0)
   $ eliminateNothings
   $ edges e

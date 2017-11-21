@@ -12,6 +12,7 @@
     "purescript-generics-rep": "^5.0.0"
   },
   "devDependencies": {
-    "purescript-psci-support": "^3.0.0"
+    "purescript-psci-support": "^3.0.0",
+    "purescript-test-unit": "^13.0.0"
   }
 }

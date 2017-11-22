@@ -2,8 +2,7 @@ module Data.GenericGraph where
 
 import Control.Semigroupoid ((>>>))
 import Data.Array (concat, foldr, (!!), (:))
-import Data.DotLang (Attr(..), Edge(..), FillStyle(..), Graph, Node(..), graphFromEdges, mapNodeId, nodeId)
-import Data.Functor ((<$>))
+import Data.DotLang (Attr(..), Edge(..), FillStyle(..), Graph, Node(..), graphFromElements, changeNodeId, nodeId)
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), Field(..), NoArguments, NoConstructors, Product(..), Rec(..), Sum(..), from)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (joinWith)
@@ -93,7 +92,7 @@ uniqueNode child (Tuple accId accChildren) = let
 
 uniqueNodes' :: Int -> Tree Node -> Tuple (Tree Node) Int
 uniqueNodes' id' (Root node children) = let
-    newNode = mapNodeId (\name -> show id') node
+    newNode = changeNodeId (\name -> show id') node
     id = id' + 1
     Tuple finalId newChildren = foldr uniqueNode (Tuple id []) children
   in  Tuple (Root newNode newChildren) finalId
@@ -112,7 +111,7 @@ extractNodes (Root node children) = node : (concat $ extractNodes <$> children)
 genericToDot :: ∀a. Edges a => a -> Graph
 genericToDot e
   = id
-  $ (\f -> graphFromEdges ((Node "root" [Style Invis]) : extractNodes f) (extractEdges (Node "root" []) f))
+  $ (\f -> graphFromElements ((Node "root" [Style Invis]) : extractNodes f) (extractEdges (Node "root" []) f))
   $ uniqueNodes
   $ fromMaybe (Root (Node "" []) [])
   $ (\a -> a !! 0)

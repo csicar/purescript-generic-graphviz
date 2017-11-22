@@ -67,13 +67,21 @@ instance attrDotLang :: DotLang Attr where
   toText (Style f) = "style="<>(toText f)
   toText (Label t) = "label="<> show t
 
+-- | Dot-Node
+-- | example : Node "e" [Margin 3, Label "some label"]
+-- | is turned into: e [margin=3, label="some label"];
 data Node = Node Id (Array Attr)
 
+
+-- | get a nodes id
+-- | example: nodeId (Node "e" [Label "foo"]) == "e"
 nodeId :: Node -> Id
 nodeId (Node id _) = id
 
-mapNodeId :: (Id -> Id) -> Node -> Node
-mapNodeId f (Node id attr) = Node (f id) $ attr <> [Label id]
+-- | change Nodes id to a new one; keeing the old id as the label
+-- | example: mapNodeId (\a -> a+"!") (Node "e" []) == Node "e!" [Label "e"]
+changeNodeId :: (Id -> Id) -> Node -> Node
+changeNodeId f (Node id attr) = Node (f id) $ attr <> [Label id]
 
 derive instance genericNode :: Generic Node _
 
@@ -83,7 +91,9 @@ instance showNode :: Show Node where
 instance nodeDotLang :: DotLang Node where
   toText (Node id attrs) = id <> " [" <> (joinWith " ," (toText <$> attrs)) <> "]"
 
-
+-- | egde from id to id
+-- | toText $ Edge "a" "b" == a -> b
+-- | option for different arrows is missing
 data Edge = Edge Id Id
 
 derive instance genericEdge :: Generic Edge _
@@ -91,6 +101,7 @@ derive instance genericEdge :: Generic Edge _
 instance showEdge :: Show Edge where
   show = genericShow
 
+-- | definition in a graph
 data Definition
   = NodeDef Node
   | EdgeDef Edge
@@ -101,6 +112,7 @@ instance definitionDotlang :: DotLang Definition where
   toText (EdgeDef (Edge a b)) = a <> " -> " <> b <> ";\n "
   toText (Subgraph defs) = "subgraph {\n " <> (joinWith "" $ toText <$> defs) <> "}"
 
+-- | graph can either be a graph or digraph
 data Graph
   = Graph (Array Definition)
   | DiGraph (Array Definition)
@@ -110,11 +122,15 @@ instance graphDotLang :: DotLang Graph where
   toText (Graph defs) = "graph {\n" <> (joinWith "" $ toText <$> defs) <> "}"
   toText (DiGraph defs) = "digraph {\n" <> (joinWith "" $ toText <$> defs) <> "}"
 
-graphFromEdges :: Array (Node) -> Array (Edge) -> Graph
-graphFromEdges nodes edges = DiGraph $ (NodeDef <$> nodes) <> (EdgeDef <$> edges)
+-- | create graph from Nodes and Edges
+-- | example: graphFromElements [Node "e" [], Node "d" []] [Edge "e" "f"]
+graphFromElements :: Array (Node) -> Array (Edge) -> Graph
+graphFromElements nodes edges = DiGraph $ (NodeDef <$> nodes) <> (EdgeDef <$> edges)
 
-class DotR a where
-  toDot :: a -> Graph
+-- | a is a type that can be represented by a Dot-Graph
+class GraphRepr a where
+  toGraph :: a -> Graph
 
+-- | a is a type that has a representation in the dot language
 class DotLang a where
   toText :: a -> String

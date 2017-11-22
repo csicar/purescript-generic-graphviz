@@ -3,7 +3,7 @@ module Main where
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.Array (foldr)
-import Data.DotLang (class DotR)
+import Data.DotLang (class GraphRepr)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.GenericGraph (class Edges, genericEdges, genericToDot)
@@ -24,8 +24,8 @@ instance showTest :: Show Test where
 instance edgesTest :: Edges Test where
   edges x = genericEdges x
 
-instance dotRTest :: DotR Test where
-  toDot = genericToDot
+instance graphReprTest :: GraphRepr Test where
+  toGraph = genericToDot
 
 data Simple = S | E String | F String Simple
 
@@ -35,8 +35,8 @@ derive instance genericSimple :: Generic Simple _
 instance egdeSimple :: Edges Simple where
   edges x = genericEdges x
 
-instance dotRSimple :: DotR Simple where
-  toDot = genericToDot
+instance graphReprSimple :: GraphRepr Simple where
+  toGraph = genericToDot
 
 
 data List' = Nil | Cons Int (List')
@@ -56,10 +56,10 @@ derive instance genericUser :: Generic User _
 instance egdeUser :: Edges User where
   edges = genericEdges
 
-instance dotRUser :: DotR User where
-  toDot = genericToDot
+instance graphReprUser :: GraphRepr User where
+  toGraph = genericToDot
 
-generateSvg :: ∀a. DotR a => a -> String
+generateSvg :: ∀a. GraphRepr a => a -> String
 generateSvg e = renderReprSvg Dot e
 
 ex1 :: String

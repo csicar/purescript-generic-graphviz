@@ -19,10 +19,10 @@ derive instance genericUser :: Generic User _
 instance egdeUser :: Edges User where
   edges = genericEdges
 
-instance dotRUser :: DotR User where
+instance graphReprUser :: GraphRepr User where
   toDot = genericToDot
 
-generateSvg :: ∀a. DotR a => a -> String
+generateSvg :: ∀a. GraphRepr a => a -> String
 generateSvg e = renderToSvg Dot e
 
 example = generateSvg (User {name: "Test", age: 2, friends: R A A B})

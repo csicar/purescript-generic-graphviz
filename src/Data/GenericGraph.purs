@@ -108,8 +108,8 @@ extractEdges parent (Root node children) = [Edge (nodeId parent) (nodeId node)] 
 extractNodes :: Tree Node -> Array Node
 extractNodes (Root node children) = node : (concat $ extractNodes <$> children)
 
-genericToDot :: ∀a. Edges a => a -> Graph
-genericToDot e
+genericToGraph :: ∀a. Edges a => a -> Graph
+genericToGraph e
   = id
   $ (\f -> graphFromElements ((Node "root" [Style Invis]) : extractNodes f) (extractEdges (Node "root" []) f))
   $ uniqueNodes

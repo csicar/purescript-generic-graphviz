@@ -13,7 +13,6 @@ import Data.Semigroup (class Semigroup, (<>))
 import Data.String (joinWith)
 import Data.Tuple (Tuple(..))
 import Data.Unit (Unit)
-import Debug.Trace (spy)
 import Math (atan, pi, sqrt, tan)
 
 
@@ -56,7 +55,7 @@ drawLine :: Int -> Line -> Point -> DrawResult
 drawLine thickness line (Point x y)
   = {
       css: [css],
-      endPoint : spy $ Point (x +(max x1 x2)) 0,
+      endPoint : Point (x +(max x1 x2)) 0,
       text: "%c "
     }
   where

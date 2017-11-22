@@ -62,6 +62,7 @@ instance boolEdge :: Edges Boolean where
   edges b = Root (Just $ Node (show b) []) []
 
 instance arrayEdges :: Edges a => Edges (Array a) where
+  edges [] = Root (Just $ Node "[]" []) []
   edges a = Root (Just $ Node ("array") []) (edges <$> a)
 
 instance genericReprArgument :: Edges a => GenericEdges (Argument a) where

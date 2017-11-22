@@ -1,0 +1,26 @@
+{
+  "name": "purescript-generic-graphviz",
+  "version": "1.0.0",
+  "description": "Generic Graphviz ====",
+  "main": "app.js",
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csicar/purescript-generic-graphviz.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/csicar/purescript-generic-graphviz/issues"
+  },
+  "homepage": "https://github.com/csicar/purescript-generic-graphviz#readme",
+  "dependencies": {
+    "viz.js": "^1.8.0"
+  }
+}

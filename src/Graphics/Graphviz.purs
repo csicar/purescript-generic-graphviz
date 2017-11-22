@@ -19,11 +19,20 @@ instance showEngine :: Show Engine where
   show Osage = "osage"
   show Twopi = "twopi"
 
+-- 
+-- newtype GraphvizJson = GraphvizJson
+--   { name :: String
+--   , directed :: Boolean
+--   , strict :: Boolean
+--   , _draw_ :: Array ()
+--
+-- }
+
 renderReprSvg :: ∀a. DotR a => Engine -> a -> String
 renderReprSvg e a = renderToSvg e $ toDot a
 
-renderToJson :: ∀a. DotR a => Engine -> a -> String
-renderToJson e a = runFn4 viz_internal (toText $ toDot a) "json" (show e) 1
+renderToJson :: ∀a. DotLang a => Engine -> a -> String
+renderToJson e a = runFn4 viz_internal (toText a) "json" (show e) 1
 
 renderToSvg :: ∀a. DotLang a => Engine -> a -> String
 renderToSvg e a = runFn4 viz_internal (toText a) "svg" (show e) 1

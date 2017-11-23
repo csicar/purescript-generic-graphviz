@@ -1,9 +1,5 @@
 module Graphics.Graphviz (renderToJson, renderToSvg, renderReprSvg, Engine(..)) where
 
-import Color.Scale (addStop)
-import Control.Bind ((>=>))
-import Control.Monad.Aff (Aff)
-import Control.Monad.Eff.Console (CONSOLE)
 import Data.DotLang (class DotLang, class GraphRepr, toGraph, toText)
 import Data.Function (($))
 import Data.Function.Uncurried (Fn4, runFn4)

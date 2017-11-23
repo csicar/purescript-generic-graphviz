@@ -1,4 +1,4 @@
-module Graphics.Graphviz (renderToJson, renderToSvg, renderReprSvg, Engine(..), svgXmlToPngBase64) where
+module Graphics.Graphviz (renderToJson, renderToSvg, renderReprSvg, Engine(..)) where
 
 import Color.Scale (addStop)
 import Control.Bind ((>=>))
@@ -8,8 +8,6 @@ import Data.DotLang (class DotLang, class GraphRepr, toGraph, toText)
 import Data.Function (($))
 import Data.Function.Uncurried (Fn4, runFn4)
 import Data.Show (class Show, show)
-import FFI.Util.Function (callAff2r1)
-import FFI.Util (require)
 
 data Engine
   = Circo

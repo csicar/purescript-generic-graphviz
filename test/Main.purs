@@ -14,7 +14,6 @@ import Data.Functor (void)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.GenericGraph (class Edges, genericEdges, genericToGraph)
-import Graphics.Graphviz (svgXmlToPngBase64)
 import Test.Unit (suite, test)
 import Test.Unit.Assert (equal)
 import Test.Unit.Console (TESTOUTPUT)
@@ -82,11 +81,6 @@ main :: Eff
 main = do
   log $ toText $ genericToGraph $ fromArray [1, 2, 3, 4, 7]
   main'
-
-other = do
-  void $ launchAff do
-    res <- svgXmlToPngBase64 "<svg></svg>" 2
-    liftEff $ log res
 
 
 main' ::

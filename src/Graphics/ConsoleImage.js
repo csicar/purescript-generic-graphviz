@@ -22,7 +22,7 @@ exports.consoleImage = function(scale) {
   }
 };
 
-exports.consoleSvg = function(scale) {
+exports.consoleSvgToPngImage = function(scale) {
   return function(svg) {
     var v = undefined;
     if (typeof window === "undefined") {

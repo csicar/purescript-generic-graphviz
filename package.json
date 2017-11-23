@@ -15,7 +15,7 @@
     "url": "git+https://github.com/csicar/purescript-generic-graphviz.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/csicar/purescript-generic-graphviz/issues"
   },

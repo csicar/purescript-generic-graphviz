@@ -1,16 +1,11 @@
 module Test.Main where
 
 import Prelude
-
-import Control.Monad.Aff (launchAff, liftEff')
-import Control.Monad.Aff.Class (liftAff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.AVar (AVAR)
-import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.DotLang (class GraphRepr, toGraph, toText)
 import Data.Foldable (foldr)
-import Data.Functor (void)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.GenericGraph (class Edges, genericEdges, genericToGraph)

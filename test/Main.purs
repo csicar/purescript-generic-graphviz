@@ -2,15 +2,19 @@ module Test.Main where
 
 import Prelude
 
-
+import Control.Monad.Aff (launchAff, liftEff')
+import Control.Monad.Aff.Class (liftAff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.AVar (AVAR)
+import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.DotLang (class GraphRepr, toGraph, toText)
 import Data.Foldable (foldr)
+import Data.Functor (void)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
-import Data.GenericGraph (class Edges, genericEdges, genericToDot)
+import Data.GenericGraph (class Edges, genericEdges, genericToGraph)
+import Graphics.Graphviz (svgXmlToPngBase64)
 import Test.Unit (suite, test)
 import Test.Unit.Assert (equal)
 import Test.Unit.Console (TESTOUTPUT)
@@ -21,7 +25,7 @@ data Simple = A | B
 
 derive instance genericSimple :: Generic Simple _
 instance simpleToDot :: GraphRepr Simple where
-  toGraph = genericToDot
+  toGraph = genericToGraph
 instance simpleEdges :: Edges Simple where
   edges =  genericEdges
 
@@ -30,7 +34,7 @@ data Rec = Leaf | Node Rec
 
 derive instance recGeneric :: Generic Rec _
 instance recToDot :: GraphRepr Rec where
-  toGraph = genericToDot
+  toGraph = genericToGraph
 
 instance recEdges :: Edges Rec where
   edges x = genericEdges x
@@ -66,7 +70,7 @@ newtype Todo = Todo
 
 derive instance genericTodo :: Generic Todo _
 instance showTodo :: Show Todo where show = genericShow
-instance graphReprTodo :: GraphRepr Todo where toGraph = genericToDot
+instance graphReprTodo :: GraphRepr Todo where toGraph = genericToGraph
 instance egdesTodo :: Edges Todo where edges x = genericEdges x
 
 main :: Eff
@@ -76,9 +80,14 @@ main :: Eff
   )
   Unit
 main = do
-  log $ toText $ genericToDot $ fromArray [1, 2, 3, 4, 7]
-  -- log $ renderToJson Dot $ genericToDot $ fromArray [1, 2]
+  log $ toText $ genericToGraph $ fromArray [1, 2, 3, 4, 7]
   main'
+
+other = do
+  void $ launchAff do
+    res <- svgXmlToPngBase64 "<svg></svg>" 2
+    liftEff $ log res
+
 
 main' ::
   Eff
@@ -98,4 +107,4 @@ main' = runTest do
     test "list" do
       equal
         "digraph {\nroot [style=invis]; 0 [label=\"Cons'\"]; 4 [label=\"1\"]; 1 [label=\"Cons'\"]; 3 [label=\"2\"]; 2 [label=\"Nil\"]; root -> 0;\n 0 -> 4;\n 0 -> 1;\n 1 -> 3;\n 1 -> 2;\n }"
-        (toText $ genericToDot $ Cons' 1 (Cons' 2 Nil))
+        (toText $ genericToGraph $ Cons' 1 (Cons' 2 Nil))

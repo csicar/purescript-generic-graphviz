@@ -6,7 +6,7 @@ import Data.Array (foldr)
 import Data.DotLang (class GraphRepr)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
-import Data.GenericGraph (class Edges, genericEdges, genericToDot)
+import Data.GenericGraph (class Edges, genericEdges, genericToGraph)
 import Graphics.Graphviz (Engine(..), renderReprSvg, renderToSvg)
 import Prelude (class Show, Unit, ($))
 
@@ -25,7 +25,7 @@ instance edgesTest :: Edges Test where
   edges x = genericEdges x
 
 instance graphReprTest :: GraphRepr Test where
-  toGraph = genericToDot
+  toGraph = genericToGraph
 
 data Simple = S | E String | F String Simple
 
@@ -36,7 +36,7 @@ instance egdeSimple :: Edges Simple where
   edges x = genericEdges x
 
 instance graphReprSimple :: GraphRepr Simple where
-  toGraph = genericToDot
+  toGraph = genericToGraph
 
 
 data List' = Nil | Cons Int (List')
@@ -57,7 +57,7 @@ instance egdeUser :: Edges User where
   edges = genericEdges
 
 instance graphReprUser :: GraphRepr User where
-  toGraph = genericToDot
+  toGraph = genericToGraph
 
 generateSvg :: ∀a. GraphRepr a => a -> String
 generateSvg e = renderReprSvg Dot e
@@ -73,4 +73,4 @@ ex3 :: String
 ex3 = generateSvg $ User {name: "Test", age: 2, friends: R A A B}
 
 ex4 :: String
-ex4 = renderToSvg Dot $ genericToDot  [A, R A B A]
+ex4 = renderToSvg Dot $ genericToGraph  [A, R A B A]

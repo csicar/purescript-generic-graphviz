@@ -32,7 +32,8 @@ exports.consoleSvgToPngImage = function(scale) {
     }
     return v.svgXmlToPngBase64(svg, scale, function(err, data) {
       if (err) {console.error(err)}
-      exports.consoleImage(scale, "data:image/png;base64,"+data);
+      var url = "data:image/png;base64,"+data
+      exports.consoleImage(scale)(url);
     })
   }
 }

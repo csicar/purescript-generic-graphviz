@@ -1,7 +1,7 @@
 {
   "name": "purescript-generic-graphviz",
   "version": "1.0.0",
-  "description": "Generic Graphviz ====",
+  "description": "Generic Graphviz",
   "main": "app.js",
   "directories": {
     "example": "example",
@@ -14,7 +14,7 @@
     "type": "git",
     "url": "git+https://github.com/csicar/purescript-generic-graphviz.git"
   },
-  "author": "",
+  "author": "csicar",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/csicar/purescript-generic-graphviz/issues"

@@ -21,3 +21,18 @@ exports.consoleImage = function(scale) {
     img.src = url;
   }
 };
+
+exports.consoleSvg = function(scale) {
+  return function(svg) {
+    var v = undefined;
+    if (typeof window === "undefined") {
+      v = require('viz.js');
+    } else {
+      v = Viz;
+    }
+    return v.svgXmlToPngBase64(svg, scale, function(err, data) {
+      if (err) {console.error(err)}
+      exports.consoleImage(scale, "data:image/png;base64,"+data);
+    })
+  }
+}

@@ -4,7 +4,6 @@
   "description": "Generic Graphviz",
   "main": "app.js",
   "directories": {
-    "example": "example",
     "test": "test"
   },
   "scripts": {

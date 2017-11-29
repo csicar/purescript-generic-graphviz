@@ -1,6 +1,7 @@
 module Test.Main where
 
 import Prelude
+
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.AVar (AVAR)
 import Control.Monad.Eff.Console (CONSOLE, log)
@@ -9,10 +10,12 @@ import Data.Foldable (foldr)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.GenericGraph (class Edges, genericEdges, genericToGraph)
+import Graphics.Graphviz (Engine(..), renderToSvg)
 import Test.Unit (suite, test)
 import Test.Unit.Assert (equal)
 import Test.Unit.Console (TESTOUTPUT)
 import Test.Unit.Main (runTest)
+import Test.Example (example)
 
 --Simple
 data Simple = A | B
@@ -27,11 +30,9 @@ instance simpleEdges :: Edges Simple where
 data Rec = Leaf | Node Rec
 
 derive instance recGeneric :: Generic Rec _
-instance recToDot :: GraphRepr Rec where
-  toGraph = genericToGraph
 
-instance recEdges :: Edges Rec where
-  edges x = genericEdges x
+instance recGraphRepr :: GraphRepr Rec where toGraph = genericToGraph
+instance recEdges :: Edges Rec where edges x = genericEdges x
 
 
 --List
@@ -39,19 +40,19 @@ data List' a = Nil | Cons' a (List' a)
 
 derive instance listGeneric :: Generic (List' a) _
 
-instance listEdges :: Edges a => Edges (List' a) where
-  edges x = genericEdges x
+instance listEdges :: Edges a => Edges (List' a) where edges x = genericEdges x
+instance listGraphRepr ∷ Edges a => GraphRepr (List' a) where toGraph  = genericToGraph
 
 fromArray :: ∀a. Array a -> List' a
 fromArray = foldr Cons' Nil
 
 --Tree
-data Tree' a = Leaf' | Node' a (Array (Tree' a))
+data Tree' a = Leaf' | Node' (Tree' a) a (Tree' a)
 
 derive instance treeGeneric :: Generic (Tree' a) _
 
-instance treeEdges :: Edges a => Edges (Tree' a) where
-  edges x = genericEdges x
+instance treeEdges :: Edges a => Edges (Tree' a) where edges x = genericEdges x
+instance treeDotRepr ::  Edges a => GraphRepr (Tree' a) where toGraph = genericToGraph
 
 -- Todo
 newtype Todo = Todo
@@ -74,7 +75,9 @@ main :: Eff
   )
   Unit
 main = do
-  log $ toText $ genericToGraph $ fromArray [1, 2, 3, 4, 7]
+  -- log $ toText $ genericToGraph $ fromArray [1, 2, 3, 4, 7]
+  -- log $ toText $ toGraph $ (Node' Leaf' 3 (Node' (Node' Leaf' 5 Leaf') 4 Leaf'))
+  log $ example
   main'
 
 
@@ -96,4 +99,8 @@ main' = runTest do
     test "list" do
       equal
         "digraph {\nroot [style=invis]; 0 [label=\"Cons'\"]; 4 [label=\"1\"]; 1 [label=\"Cons'\"]; 3 [label=\"2\"]; 2 [label=\"Nil\"]; root -> 0;\n 0 -> 4;\n 0 -> 1;\n 1 -> 3;\n 1 -> 2;\n }"
-        (toText $ genericToGraph $ Cons' 1 (Cons' 2 Nil))
+        (toText $ toGraph $ Cons' 1 (Cons' 2 Nil))
+    test "tree" do
+      equal
+        "digraph {\nroot [style=invis]; 0 [label=\"Node'\"]; 9 [label=\"Leaf'\"]; 8 [label=\"3\"]; 1 [label=\"Node'\"]; 4 [label=\"Node'\"]; 7 [label=\"Leaf'\"]; 6 [label=\"5\"]; 5 [label=\"Leaf'\"]; 3 [label=\"4\"]; 2 [label=\"Leaf'\"]; root -> 0;\n 0 -> 9;\n 0 -> 8;\n 0 -> 1;\n 1 -> 4;\n 4 -> 7;\n 4 -> 6;\n 4 -> 5;\n 1 -> 3;\n 1 -> 2;\n }"
+        (toText $ toGraph $ Node' Leaf' 3 (Node' (Node' Leaf' 5 Leaf') 4 Leaf'))

@@ -11,21 +11,29 @@ Example
 ---
 
 ```purescript
+-- your data type
+data Tree' a = Leaf' | Node' (Tree' a) a (Tree' a)
 
-newtype User = User {name :: String, age :: Int, friends :: Test}
+-- derive generic
+derive instance treeGeneric :: Generic (Tree' a) _
 
-derive instance genericUser :: Generic User _
+-- create instances for the needed type classes
+instance treeEdges :: Edges a => Edges (Tree' a) where edges x = genericEdges x
+instance treeDotRepr ::  Edges a => GraphRepr (Tree' a) where toGraph = genericToGraph
 
-instance egdeUser :: Edges User where
-  edges = genericEdges
-
-instance graphReprUser :: GraphRepr User where
-  toDot = genericToDot
-
-generateSvg :: ∀a. GraphRepr a => a -> String
-generateSvg e = renderToSvg Dot e
-
-example = generateSvg (User {name: "Test", age: 2, friends: R A A B})
+example :: String
+example = renderToSvg Dot $ toGraph $
+  Node' Leaf' 3 (Node' (Node' Leaf' 5 Leaf') 4 Leaf')
+-- example = "...<svg><g>...</g>...</svg>..."
 ```
 
 ![screenshot](screenshot.png)
+
+see [full file](./test/Example.purs) for imports
+
+TODOs
+-----
+
+- Refactor into multiple libraries
+- support entine DOT language in data model
+- allow custom edges in GenericGraph

@@ -1,6 +1,8 @@
 Generic Graphviz
 ====
 
+documentation can be found on [pursuit](https://pursuit.purescript.org/packages/purescript-generic-graphviz/)
+
 consists of 3 parts (which probably should be seperate modules..):
 
 1. Dot-Lang typed representation and Dot-Lang code-generator (located in Data.DotLang)
@@ -50,3 +52,14 @@ TODOs
 - Refactor into multiple libraries
 - support entire DOT language in data model
 - allow custom edges in GenericGraph
+- add effects to console.image
+- move viz.js call into a WebWorker
+
+Testing
+-------
+
+run tests:
+```bash
+$ pulp test
+```
+

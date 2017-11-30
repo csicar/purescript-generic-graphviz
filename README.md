@@ -48,5 +48,5 @@ TODOs
 -----
 
 - Refactor into multiple libraries
-- support entine DOT language in data model
+- support entire DOT language in data model
 - allow custom edges in GenericGraph

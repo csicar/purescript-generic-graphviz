@@ -108,6 +108,17 @@ extractEdges parent (Root node children) = [Edge (nodeId parent) (nodeId node)] 
 extractNodes :: Tree Node -> Array Node
 extractNodes (Root node children) = node : (concat $ extractNodes <$> children)
 
+-- | genenric version of toGraph not renaming nodes.
+genericToGraphUnique ∷ ∀a. Edges a => a -> Graph
+genericToGraphUnique e
+  = id
+  $ (\f -> graphFromElements ((Node "root" [Style Invis]) : extractNodes f) (extractEdges (Node "root" []) f))
+  $ fromMaybe (Root (Node "" []) [])
+  $ (\a -> a !! 0)
+  $ eliminateNothings
+  $ edges e
+
+-- | generic version of toGraph. Renaming Nodes to make them unique
 genericToGraph :: ∀a. Edges a => a -> Graph
 genericToGraph e
   = id

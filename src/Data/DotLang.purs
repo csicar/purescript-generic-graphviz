@@ -68,18 +68,24 @@ instance attrDotLang :: DotLang Attr where
   toText (Label t) = "label="<> show t
 
 -- | Dot-Node
--- | example : Node "e" [Margin 3, Label "some label"]
--- | is turned into: e [margin=3, label="some label"];
+-- | example :
+-- | ```purescript
+-- | Node "e" [Margin 3, Label "some label"]
+-- | ```
+-- | is turned into: `e [margin=3, label="some label"];`
 data Node = Node Id (Array Attr)
 
 
 -- | get a nodes id
--- | example: nodeId (Node "e" [Label "foo"]) == "e"
+-- | example:
+-- | ```purescript
+-- | nodeId (Node "e" [Label "foo"]) == "e"
+-- | ```
 nodeId :: Node -> Id
 nodeId (Node id _) = id
 
 -- | change Nodes id to a new one; keeing the old id as the label
--- | example: mapNodeId (\a -> a+"!") (Node "e" []) == Node "e!" [Label "e"]
+-- | example: `mapNodeId (\a -> a+"!") (Node "e" []) == Node "e!" [Label "e"]`
 changeNodeId :: (Id -> Id) -> Node -> Node
 changeNodeId f (Node id attr) = Node (f id) $ attr <> [Label id]
 
@@ -92,7 +98,7 @@ instance nodeDotLang :: DotLang Node where
   toText (Node id attrs) = id <> " [" <> (joinWith " ," (toText <$> attrs)) <> "]"
 
 -- | egde from id to id
--- | toText $ Edge "a" "b" == a -> b
+-- | `toText $ Edge "a" "b"` == `a -> b`
 -- | option for different arrows is missing
 data Edge = Edge Id Id
 
@@ -123,14 +129,14 @@ instance graphDotLang :: DotLang Graph where
   toText (DiGraph defs) = "digraph {\n" <> (joinWith "" $ toText <$> defs) <> "}"
 
 -- | create graph from Nodes and Edges
--- | example: graphFromElements [Node "e" [], Node "d" []] [Edge "e" "f"]
+-- | example: `graphFromElements [Node "e" [], Node "d" []] [Edge "e" "f"]`
 graphFromElements :: Array (Node) -> Array (Edge) -> Graph
 graphFromElements nodes edges = DiGraph $ (NodeDef <$> nodes) <> (EdgeDef <$> edges)
 
--- | a is a type that can be represented by a Dot-Graph
+-- | `a` is a type that can be represented by a Dot-Graph
 class GraphRepr a where
   toGraph :: a -> Graph
 
--- | a is a type that has a representation in the dot language
+-- | `a` is a type that has a representation in the dot language
 class DotLang a where
   toText :: a -> String

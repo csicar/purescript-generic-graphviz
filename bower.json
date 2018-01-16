@@ -15,7 +15,8 @@
     "purescript-prelude": "^3.1.1",
     "purescript-console": "^3.0.0",
     "purescript-generics-rep": "^5.0.0",
-    "viz.js": "^1.8.0"
+    "viz.js": "^1.8.0",
+    "purescript-dotlang": "^1.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^3.0.0",

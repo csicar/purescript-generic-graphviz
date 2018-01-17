@@ -2,7 +2,7 @@ module Data.GenericGraph where
 
 import Control.Semigroupoid ((>>>))
 import Data.Array (concat, foldr, (!!), (:))
-import Data.DotLang (Attr(..), Edge(..), FillStyle(..), Graph, Node(..), graphFromElements, changeNodeId, nodeId)
+import Data.DotLang (Attr(..), Edge(..), EdgeType(..), FillStyle(..), Graph, Node(..), graphFromElements, changeNodeId, nodeId, (==>))
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), Field(..), NoArguments, NoConstructors, Product(..), Rec(..), Sum(..), from)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (joinWith)
@@ -101,7 +101,7 @@ uniqueNodes :: Tree Node -> Tree Node
 uniqueNodes = (uniqueNodes' 0) >>> fst
 
 extractEdges :: Node -> Tree Node -> Array Edge
-extractEdges parent (Root node children) = [Edge (nodeId parent) (nodeId node)] <>
+extractEdges parent (Root node children) = [Edge Forward (nodeId parent) (nodeId node)] <>
   (concat $
     (extractEdges node) <$> children)
 

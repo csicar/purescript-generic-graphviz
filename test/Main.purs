@@ -10,7 +10,6 @@ import Data.Foldable (foldr)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.GenericGraph (class Edges, genericEdges, genericToGraph)
-import Graphics.Graphviz (Engine(..), renderToSvg)
 import Test.Unit (suite, test)
 import Test.Unit.Assert (equal)
 import Test.Unit.Console (TESTOUTPUT)
@@ -91,16 +90,16 @@ main' ::
 main' = runTest do
   suite "GenericGraph" do
     test "simple" do
-      equal "digraph {\nroot [style=invis]; 0 [label=\"A\"]; root -> 0;\n }" (toText $ toGraph A)
+      equal "digraph {root [style=invis]; 0 [label=\"A\"]; root -> 0; }" (toText $ toGraph A)
     test "recursive" do
       equal
-        "digraph {\nroot [style=invis]; 0 [label=\"Node\"]; 1 [label=\"Node\"]; 2 [label=\"Leaf\"]; root -> 0;\n 0 -> 1;\n 1 -> 2;\n }"
+        "digraph {root [style=invis]; 0 [label=\"Node\"]; 1 [label=\"Node\"]; 2 [label=\"Leaf\"]; root -> 0; 0 -> 1; 1 -> 2; }"
         (toText $ toGraph $ Node (Node Leaf))
     test "list" do
       equal
-        "digraph {\nroot [style=invis]; 0 [label=\"Cons'\"]; 4 [label=\"1\"]; 1 [label=\"Cons'\"]; 3 [label=\"2\"]; 2 [label=\"Nil\"]; root -> 0;\n 0 -> 4;\n 0 -> 1;\n 1 -> 3;\n 1 -> 2;\n }"
+        "digraph {root [style=invis]; 0 [label=\"Cons'\"]; 4 [label=\"1\"]; 1 [label=\"Cons'\"]; 3 [label=\"2\"]; 2 [label=\"Nil\"]; root -> 0; 0 -> 4; 0 -> 1; 1 -> 3; 1 -> 2; }"
         (toText $ toGraph $ Cons' 1 (Cons' 2 Nil))
     test "tree" do
       equal
-        "digraph {\nroot [style=invis]; 0 [label=\"Node'\"]; 9 [label=\"Leaf'\"]; 8 [label=\"3\"]; 1 [label=\"Node'\"]; 4 [label=\"Node'\"]; 7 [label=\"Leaf'\"]; 6 [label=\"5\"]; 5 [label=\"Leaf'\"]; 3 [label=\"4\"]; 2 [label=\"Leaf'\"]; root -> 0;\n 0 -> 9;\n 0 -> 8;\n 0 -> 1;\n 1 -> 4;\n 4 -> 7;\n 4 -> 6;\n 4 -> 5;\n 1 -> 3;\n 1 -> 2;\n }"
+        "digraph {root [style=invis]; 0 [label=\"Node'\"]; 9 [label=\"Leaf'\"]; 8 [label=\"3\"]; 1 [label=\"Node'\"]; 4 [label=\"Node'\"]; 7 [label=\"Leaf'\"]; 6 [label=\"5\"]; 5 [label=\"Leaf'\"]; 3 [label=\"4\"]; 2 [label=\"Leaf'\"]; root -> 0; 0 -> 9; 0 -> 8; 0 -> 1; 1 -> 4; 4 -> 7; 4 -> 6; 4 -> 5; 1 -> 3; 1 -> 2; }"
         (toText $ toGraph $ Node' Leaf' 3 (Node' (Node' Leaf' 5 Leaf') 4 Leaf'))

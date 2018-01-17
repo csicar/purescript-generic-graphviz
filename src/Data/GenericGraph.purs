@@ -2,7 +2,7 @@ module Data.GenericGraph where
 
 import Control.Semigroupoid ((>>>))
 import Data.Array (concat, foldr, (!!), (:))
-import Data.DotLang (Attr(..), Edge(..), EdgeType(..), FillStyle(..), Graph, Node(..), graphFromElements, changeNodeId, nodeId, (==>))
+import Data.DotLang (Attr(..), Edge(..), EdgeType(..), FillStyle(..), Graph, Node(..), graphFromElements, changeNodeId, nodeId)
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), Field(..), NoArguments, NoConstructors, Product(..), Rec(..), Sum(..), from)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (joinWith)

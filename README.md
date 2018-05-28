@@ -3,11 +3,11 @@ Generic Graphviz
 
 documentation can be found on [pursuit](https://pursuit.purescript.org/packages/purescript-generic-graphviz/)
 
-consists of 3 parts (which probably should be seperate modules..):
+consists of 3 parts (which probably *now are* seperate modules..):
 
-1. Dot-Lang typed representation and Dot-Lang code-generator (located in Data.DotLang)
-2. Generic Graph generator (takes an arbituary ADT and generates a graph for it)
-3. Bindings for Graphviz using [viz.js](https://github.com/mdaines/viz.js/)
+1. Dot-Lang typed representation and Dot-Lang code-generator. [here](https://github.com/csicar/purescript-dotlang)
+2. Generic Graph generator (takes an arbituary ADT and generates a graph for it) (this repository)
+3. Bindings for Graphviz [here](https://github.com/csicar/purescript-graphviz)
 
 Example
 ---

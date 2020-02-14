@@ -2,14 +2,21 @@ module Data.GenericGraph where
 
 import Control.Semigroupoid ((>>>))
 import Data.Array (concat, foldr, (!!), (:))
-import Data.DotLang (Attr(..), Edge(..), EdgeType(..), FillStyle(..), Graph, Node(..), graphFromElements, changeNodeId, nodeId)
-import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), Field(..), NoArguments, NoConstructors, Product(..), Rec(..), Sum(..), from)
+import Data.DotLang (Edge(..), EdgeType(..), Graph, Node(..), graphFromElements, changeNodeId, nodeId)
+import Data.DotLang.Attr (FillStyle(..))
+import Data.DotLang.Attr.Edge as E
+import Data.DotLang.Attr.Node as N
+import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments, NoConstructors, Product(..), Sum(..), from)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (joinWith)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Tuple (Tuple(..), fst)
-import Prelude (class Show, id, show, ($), (+), (<$>), (<>))
-
+import Prelude (class Show, identity, show, ($), (+), (<$>), (<>))
+import Prim.Row (class Cons, class Lacks)
+import Prim.RowList (class RowToList, Nil, Cons)
+import Record as Record
+import Type.Data.RowList (RLProxy(..))
+import Type.RowList (class ListToRow)
 
 -- Tree type
 data Tree a = Root a (Array (Tree a))
@@ -67,14 +74,22 @@ instance arrayEdges :: Edges a => Edges (Array a) where
 instance genericReprArgument :: Edges a => GenericEdges (Argument a) where
   genericEdges' (Argument a) = edges a
 
+class (RowToList r rl) <= GenericEdgesRowList r rl | rl -> r where
+  rlEdges :: RLProxy rl -> Record r -> Array (Tree (Maybe Node))
 
-instance genericEdgesRec :: GenericEdges a => GenericEdges (Rec a) where
-  genericEdges' (Rec a) = genericEdges' a
+instance emptyRowToEdge :: (RowToList r Nil) => GenericEdgesRowList r Nil where
+  rlEdges _ _ = []
 
-instance genericEdgesField :: (Edges a, IsSymbol name) => GenericEdges (Field name a) where
-  genericEdges' (Field a) = Root (Just $ Node fieldName []) [ edges a ]
+instance consRowToEdge :: (Edges ty, Lacks name tailRow, GenericEdgesRowList tailRow tail, Cons name ty tailRow r, IsSymbol name, RowToList r (Cons name ty tail)) => GenericEdgesRowList r (Cons name ty tail) where
+  rlEdges _ r = Root (Just $ Node fieldName []) [edges fieldValue] : rlEdges (RLProxy :: RLProxy tail) (Record.delete fieldSymbol r)
     where
-      fieldName = reflectSymbol (SProxy :: SProxy name)
+      fieldSymbol = SProxy :: SProxy name
+      fieldName = reflectSymbol fieldSymbol
+      fieldValue :: ty
+      fieldValue = Record.get fieldSymbol r
+
+instance genericEdgesRec :: (RowToList r rl, GenericEdgesRowList r rl) => Edges (Record r) where
+  edges r = Root (Just $ Node "root" []) (rlEdges (RLProxy :: RLProxy rl) r)
 
 -- | A `Generic` implementation of the `eq` member from the `Eq` type class.
 genericEdges :: forall a rep. Generic a rep => GenericEdges rep => a -> Tree (Maybe Node)
@@ -101,7 +116,7 @@ uniqueNodes :: Tree Node -> Tree Node
 uniqueNodes = (uniqueNodes' 0) >>> fst
 
 extractEdges :: Node -> Tree Node -> Array Edge
-extractEdges parent (Root node children) = [Edge Forward (nodeId parent) (nodeId node)] <>
+extractEdges parent (Root node children) = [Edge Forward (nodeId parent) (nodeId node) []] <>
   (concat $
     (extractEdges node) <$> children)
 
@@ -111,8 +126,8 @@ extractNodes (Root node children) = node : (concat $ extractNodes <$> children)
 -- | genenric version of toGraph not renaming nodes.
 genericToGraphUnique ∷ ∀a. Edges a => a -> Graph
 genericToGraphUnique e
-  = id
-  $ (\f -> graphFromElements ((Node "root" [Style Invis]) : extractNodes f) (extractEdges (Node "root" []) f))
+  = identity
+  $ (\f -> graphFromElements ((Node "root" [N.Style Invis]) : extractNodes f) (extractEdges (Node "root" []) f))
   $ fromMaybe (Root (Node "" []) [])
   $ (\a -> a !! 0)
   $ eliminateNothings
@@ -121,8 +136,8 @@ genericToGraphUnique e
 -- | generic version of toGraph. Renaming Nodes to make them unique
 genericToGraph :: ∀a. Edges a => a -> Graph
 genericToGraph e
-  = id
-  $ (\f -> graphFromElements ((Node "root" [Style Invis]) : extractNodes f) (extractEdges (Node "root" []) f))
+  = identity
+  $ (\f -> graphFromElements ((Node "root" [N.Style Invis]) : extractNodes f) (extractEdges (Node "root" []) f))
   $ uniqueNodes
   $ fromMaybe (Root (Node "" []) [])
   $ (\a -> a !! 0)

@@ -92,10 +92,14 @@ main = runTest do
       equal
         "digraph {root [style=invis]; 0 [label=\"Cons'\"]; 4 [label=\"1\"]; 1 [label=\"Cons'\"]; 3 [label=\"2\"]; 2 [label=\"Nil\"]; root -> 0 []; 0 -> 4 []; 0 -> 1 []; 1 -> 3 []; 1 -> 2 []; }"
         (toText $ toGraph $ Cons' 1 (Cons' 2 Nil))
-    test "prelude.list" do
+    test "prelude.list Cons" do
       equal
-        ""
-        (toText $ toGraph $ L.Cons 1 (L.Cons 2 L.Nil))
+        "digraph {root [style=invis]; 0 [label=\"list\"]; 1 [label=\"1\"]; 2 [label=\"2\"]; 3 [label=\"6\"]; root -> 0 []; 0 -> 1 []; 1 -> 2 []; 2 -> 3 []; }"
+        (toText $ genericToGraph $ L.Cons 1 (L.Cons 2 (L.Cons 6 L.Nil)))
+    test "prelude.list Nil" do
+          equal
+            "digraph {root [style=invis]; 0 [label=\"Nil\"]; root -> 0 []; }"
+            (toText $ genericToGraph $ (L.Nil :: L.List Int))
     test "tree" do
       equal
         "digraph {root [style=invis]; 0 [label=\"Node'\"]; 9 [label=\"Leaf'\"]; 8 [label=\"3\"]; 1 [label=\"Node'\"]; 4 [label=\"Node'\"]; 7 [label=\"Leaf'\"]; 6 [label=\"5\"]; 5 [label=\"Leaf'\"]; 3 [label=\"4\"]; 2 [label=\"Leaf'\"]; root -> 0 []; 0 -> 9 []; 0 -> 8 []; 0 -> 1 []; 1 -> 4 []; 4 -> 7 []; 4 -> 6 []; 4 -> 5 []; 1 -> 3 []; 1 -> 2 []; }"

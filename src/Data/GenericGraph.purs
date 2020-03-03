@@ -2,7 +2,7 @@ module Data.GenericGraph where
 
 import Control.Semigroupoid ((>>>))
 import Data.List(List(..))
-import Data.Array (concat, foldr, fromFoldable, (!!), (:))
+import Data.Array (concat, foldr, (!!), (:))
 import Data.DotLang (Edge(..), EdgeType(..), Graph, Node(..), graphFromElements, changeNodeId, nodeId)
 import Data.DotLang.Attr (FillStyle(..))
 import Data.DotLang.Attr.Edge as E
@@ -12,7 +12,7 @@ import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (joinWith)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Tuple (Tuple(..), fst)
-import Prelude (class Show, identity, show, ($), (+), (<$>), (<>), (<<<))
+import Prelude (class Show, identity, show, ($), (+), (<$>), (<>))
 import Prim.Row (class Cons, class Lacks)
 import Prim.RowList (class RowToList, Nil, Cons)
 import Record as Record

@@ -94,7 +94,7 @@ main = runTest do
         (toText $ toGraph $ Cons' 1 (Cons' 2 Nil))
     test "prelude.list Cons" do
       equal
-        "digraph {root [style=invis]; 0 [label=\"list\"]; 1 [label=\"1\"]; 2 [label=\"2\"]; 3 [label=\"6\"]; root -> 0 []; 0 -> 1 []; 1 -> 2 []; 2 -> 3 []; }"
+        "digraph {root [style=invis]; 0 [label=\"1\"]; 1 [label=\"2\"]; 2 [label=\"6\"]; 3 [label=\"Nil\"]; root -> 0 []; 0 -> 1 []; 1 -> 2 []; 2 -> 3 []; }"
         (toText $ genericToGraph $ L.Cons 1 (L.Cons 2 (L.Cons 6 L.Nil)))
     test "prelude.list Nil" do
           equal

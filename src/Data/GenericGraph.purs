@@ -73,7 +73,12 @@ instance arrayEdges :: Edges a => Edges (Array a) where
   edges a = Root (Just $ Node ("array") []) (edges <$> a)
 
 instance listEdges :: Edges a => Edges (List a) where
-  edges = edges <<< fromFoldable
+  edges Nil = Root (Just $ Node ("Nil") []) []
+  edges l@(Cons _ _) = Root (Just $ Node ("list") []) [go l]
+    where
+      go (Nil) = Root (Nothing) []
+      go (Cons a as) = case edges a of
+                            (Root n _) -> Root n [go as]
 
 instance genericReprArgument :: Edges a => GenericEdges (Argument a) where
   genericEdges' (Argument a) = edges a

@@ -1,6 +1,7 @@
 module Data.GenericGraph where
 
 import Control.Semigroupoid ((>>>))
+import Data.List(List(..))
 import Data.Array (concat, foldr, (!!), (:))
 import Data.DotLang (Edge(..), EdgeType(..), Graph, Node(..), graphFromElements, changeNodeId, nodeId)
 import Data.DotLang.Attr (FillStyle(..))
@@ -70,6 +71,11 @@ instance boolEdge :: Edges Boolean where
 instance arrayEdges :: Edges a => Edges (Array a) where
   edges [] = Root (Just $ Node "[]" []) []
   edges a = Root (Just $ Node ("array") []) (edges <$> a)
+
+instance listEdges :: Edges a => Edges (List a) where
+  edges Nil = Root (Just $ Node ("Nil") []) []
+  edges (Cons a as) = case edges a of
+                            (Root n _) -> Root n [edges as]
 
 instance genericReprArgument :: Edges a => GenericEdges (Argument a) where
   genericEdges' (Argument a) = edges a

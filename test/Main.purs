@@ -6,18 +6,12 @@ import Data.DotLang (class GraphRepr, toGraph)
 import Data.DotLang.Class (toText)
 import Data.Foldable (foldr)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Show (genericShow)
 import Data.GenericGraph (class Edges, genericEdges, genericToGraph)
-import Data.List(List(..)) as L
+import Data.List (List(..)) as L
+import Data.Show.Generic (genericShow)
 import Effect (Effect)
-import Effect.Aff (Aff)
-import Effect.Aff.Class (liftAff)
-import Effect.Class (liftEffect)
-import Effect.Class.Console (logShow)
-import Test.Example (example)
 import Test.Unit (suite, test)
 import Test.Unit.Assert (equal)
-import Test.Unit.Console (log)
 import Test.Unit.Main (runTest)
 
 --Simple

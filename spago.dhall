@@ -7,7 +7,6 @@ You can edit this file as you like.
     [ "console"
     , "dotlang"
     , "effect"
-    , "generics-rep"
     , "graphviz"
     , "prelude"
     , "psci-support"
